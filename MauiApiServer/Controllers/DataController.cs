@@ -20,7 +20,7 @@ namespace MauiApiServer.Controllers
             _logger = logger;
         }
 
-        [HttpPost("upload")]
+        [HttpPost("upload-file")]
         public async Task<IActionResult> UploadFile()
         {
             try
@@ -44,7 +44,7 @@ namespace MauiApiServer.Controllers
             }
         }
 
-        [HttpPost("validate")]
+        [HttpPost("validate-data")]
         public async Task<IActionResult> ValidateData([FromBody] List<List<string>> data)
         {
             if (!await _dataService.CheckDataForEmpry(data)) 
@@ -55,7 +55,7 @@ namespace MauiApiServer.Controllers
             return Ok(await _dataService.ValidateDataAsync(data)); 
         }
 
-        [HttpPost("save")]
+        [HttpPost("save-data")]
         public async Task<IActionResult> SaveData([FromBody] List<List<string>> data)
         {
             if (!await _dataService.CheckDataForEmpry(data))
@@ -64,6 +64,12 @@ namespace MauiApiServer.Controllers
             }
 
             return Ok(await _dataService.SaveDataAsync(data));
+        }
+
+        [HttpGet("get-person/{id}")]
+        public async Task<IActionResult> GetPersonById(int it)
+        {
+
         }
     }
 }
