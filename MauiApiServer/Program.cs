@@ -29,11 +29,11 @@ builder.Services.AddTransient<IExcelDataReader, ExcelDataReader>();
 builder.Services.AddTransient<IPersonParser, PersonParser>();
 builder.Services.AddTransient<IDateParser, DateParser>();
 
-builder.Services.AddTransient<Func<string, bool>>(provider =>
-{
+//builder.Services.AddTransient<Func<string, bool>>(provider =>
+//{
     
-    return str => bool.Parse(str);
-});
+//    return str => bool.Parse(str);
+//});
 
 // My Db Context
 builder.Services.AddDbContext<AppDbContext>();

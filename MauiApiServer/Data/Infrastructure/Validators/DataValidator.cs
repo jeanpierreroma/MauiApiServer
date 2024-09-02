@@ -6,25 +6,25 @@ namespace MauiApiServer.Data.Infrastructure.Validators
 {
     public class DataValidator : IDataValidator
     {
-        public async Task<List<PersonViewModel>> ValidateData(List<Person> people)
+        public async Task<List<PersonViewModel>> ValidateDataAsync(List<Person> people)
         {
-            var tasks = people.Select(ValidateData).ToList();
+            var tasks = people.Select(ValidateDataAsync).ToList();
             var peopleVM = await Task.WhenAll(tasks);
             return peopleVM.ToList();
         }
 
-        public async Task<PersonViewModel> ValidateData(Person person)
+        public async Task<PersonViewModel> ValidateDataAsync(Person? person)
         {
             var personViewModel = new PersonViewModel
             {
-                FirstName = person.FirstName,
-                LastName = person.LastName,
-                Gender = person.Gender,
-                Country = person.Country,
-                Age = person.Age,
-                Date = person.Date,
-                Id = person.Id,
-                Status = IsPersonValid(person) ? ValidationStatus.Valid : ValidationStatus.InValid
+                FirstName = person?.FirstName ?? string.Empty,
+                LastName = person?.LastName ?? string.Empty,
+                Gender = person?.Gender ?? string.Empty,
+                Country = person?.Country ?? string.Empty,
+                Age = person?.Age ?? 0,
+                Date = person?.Date ?? DateTime.UtcNow,
+                Id = person?.Id ?? -1,
+                Status = person == null || !IsPersonValid(person) ? ValidationStatus.InValid : ValidationStatus.Valid
             };
 
             return await Task.FromResult(personViewModel);

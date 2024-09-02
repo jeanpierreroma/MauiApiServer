@@ -45,30 +45,7 @@ namespace MauiApiServer.Data.Core
             return await ValidateDataAsync(person);
         }
 
-        public async Task<PersonViewModel?> GetPersonById(int id)
-        {
-            Person? person = _context.Persons.FirstOrDefault(p => p.Id == id);
-
-            return await ValidateDataAsync(person);
-        }
-
-        public async Task<string> DeletePerson(int id)
-        {
-            var toDelete = await _context.Persons.FindAsync(id);
-
-            if (toDelete == null)
-            {
-                return $"There is no person with ID: {id}!";
-            }
-
-            _context.Persons.Remove(toDelete);
-
-            await _context.SaveChangesAsync();
-
-            return $"Person with ID: {id} was successfully deleted!";
-        }
-
-        public async Task<string> SaveDataAsync(List<List<string>> data)
+        public async Task<string> SaveDataAsync(List<Person> data)
         {
             if (await CheckDataForEmpry(data))
             {
@@ -76,10 +53,19 @@ namespace MauiApiServer.Data.Core
             }
 
             // Validate data
-            await _dataValidator.ValidateDataAsync(data);
+            var people = (await _dataValidator.ValidateDataAsync(data))
+                .Where(pvm => pvm.Status == ValidationStatus.Valid)
+                .Select(pvm => new Person
+                {
+                    Id = pvm.Id,
+                    FirstName = pvm.FirstName,
+                    LastName = pvm.LastName,
+                    Gender = pvm.Gender,
+                    Country = pvm.Country,
+                    Age = pvm.Age,
+                    Date = pvm.Date
+                });
 
-            // Parse data
-            var people = _dataParser.ParseData(data);
 
             var uniquesPeople = FindUniquePeople(people);
 
@@ -91,6 +77,7 @@ namespace MauiApiServer.Data.Core
                         .AsNoTracking()
                         .FirstOrDefaultAsync(p => p.Id == person.Id);
 
+                    // if exist, then update, unless add new
                     if (existingPerson != null)
                     {
                         _context.Entry(existingPerson).CurrentValues.SetValues(person);
@@ -113,7 +100,7 @@ namespace MauiApiServer.Data.Core
 
         private async Task<bool> CheckDataForEmpry(List<Person> data)
         {
-            return await Task.FromResult(data == null || data.Count > 0);
+            return await Task.FromResult(data == null || data.Count == 0);
         }
         private async Task<List<PersonViewModel>?> ValidateDataAsync(List<Person> data)
         {

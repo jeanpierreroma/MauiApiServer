@@ -1,4 +1,5 @@
 ﻿using MauiApiServer.Data.Core.Interfaces;
+using MauiApiServer.Data.Core.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -44,32 +45,16 @@ namespace MauiApiServer.Controllers
             }
         }
 
-        [HttpPost("validate-data")]
-        public async Task<IActionResult> ValidateData([FromBody] List<List<string>> data)
+        [HttpPost("update-data")]
+        public async Task<IActionResult> UpdateData([FromBody] Person data)
         {
-            if (!await _dataService.CheckDataForEmpry(data)) 
-            { 
-                return BadRequest("Data is empty"); 
-            }
-
-            return Ok(await _dataService.ValidateDataAsync(data)); 
+            return Ok(await _dataService.UpdatePerson(data)); 
         }
 
         [HttpPost("save-data")]
-        public async Task<IActionResult> SaveData([FromBody] List<List<string>> data)
+        public async Task<IActionResult> SaveData([FromBody] List<Person> data)
         {
-            if (!await _dataService.CheckDataForEmpry(data))
-            {
-                return BadRequest("Data is empty");
-            }
-
             return Ok(await _dataService.SaveDataAsync(data));
-        }
-
-        [HttpGet("get-person/{id}")]
-        public async Task<IActionResult> GetPersonById(int it)
-        {
-
         }
     }
 }

@@ -7,14 +7,10 @@ namespace MauiApiServer.Data.Infrastructure.DataParsing
     public class DataParser : IDataParser
     {
         private readonly IPersonParser _personParser;
-        private readonly Func<string, bool> _isValid;
 
-        public DataParser(
-            IPersonParser personParser,
-            Func<string, bool> isValid)
+        public DataParser(IPersonParser personParser)
         {
             _personParser = personParser;
-            _isValid = isValid;
         }
 
         public List<Person> ParseData(List<List<string>> data)
@@ -23,11 +19,6 @@ namespace MauiApiServer.Data.Infrastructure.DataParsing
 
             foreach (var row in data)
             {
-                if (!_isValid(row[^1]))
-                {
-                    continue;
-                }
-
                 var neededData = row.Skip(1).Take(7).ToArray();
 
                 var person = _personParser.Parse(neededData);
