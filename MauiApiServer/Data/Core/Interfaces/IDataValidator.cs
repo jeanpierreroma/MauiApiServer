@@ -6,6 +6,6 @@ namespace MauiApiServer.Data.Core.Interfaces
     public interface IDataValidator
     {
         Task<List<PersonViewModel>> ValidateDataAsync(List<Person> data);
-        Task<PersonViewModel?> ValidateDataAsync(Person? person); 
+        Task<PersonViewModel> ValidateDataAsync(PersonViewModel? person); 
     }
 }

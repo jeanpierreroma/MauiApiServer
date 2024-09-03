@@ -1,5 +1,6 @@
 ﻿using MauiApiServer.Data.Core.Interfaces;
 using MauiApiServer.Data.Core.Models;
+using MauiApiServer.Data.Core.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,13 +47,13 @@ namespace MauiApiServer.Controllers
         }
 
         [HttpPost("update-data")]
-        public async Task<IActionResult> UpdateData([FromBody] Person data)
+        public async Task<IActionResult> UpdateData([FromBody] PersonViewModel data)
         {
             return Ok(await _dataService.UpdatePerson(data)); 
         }
 
         [HttpPost("save-data")]
-        public async Task<IActionResult> SaveData([FromBody] List<Person> data)
+        public async Task<IActionResult> SaveData([FromBody] List<PersonViewModel> data)
         {
             return Ok(await _dataService.SaveDataAsync(data));
         }

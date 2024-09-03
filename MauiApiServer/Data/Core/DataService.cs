@@ -1,10 +1,7 @@
 ﻿using MauiApiServer.Data.Core.Interfaces;
 using MauiApiServer.Data.Core.Models;
 using MauiApiServer.Data.Core.ViewModels;
-using MauiApiServer.Data.Infrastructure.DataParsing;
-using MauiApiServer.Data.Infrastructure.Validators;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 
 namespace MauiApiServer.Data.Core
 {
@@ -40,30 +37,30 @@ namespace MauiApiServer.Data.Core
             return await ValidateDataAsync(people);
         }
 
-        public async Task<PersonViewModel?> UpdatePerson(Person person)
+        public async Task<PersonViewModel?> UpdatePerson(PersonViewModel person)
         {
             return await ValidateDataAsync(person);
         }
 
-        public async Task<string> SaveDataAsync(List<Person> data)
+        public async Task<string> SaveDataAsync(List<PersonViewModel> data)
         {
-            if (await CheckDataForEmpry(data))
+            if (CheckDataForEmpry(data))
             {
                 return "Data is emply!";
             }
 
-            // Validate data
-            var people = (await _dataValidator.ValidateDataAsync(data))
+            // Valid data
+            var people = data
                 .Where(pvm => pvm.Status == ValidationStatus.Valid)
                 .Select(pvm => new Person
                 {
                     Id = pvm.Id,
-                    FirstName = pvm.FirstName,
-                    LastName = pvm.LastName,
-                    Gender = pvm.Gender,
-                    Country = pvm.Country,
-                    Age = pvm.Age,
-                    Date = pvm.Date
+                    FirstName = pvm.FirstName!,
+                    LastName = pvm.LastName!,
+                    Gender = pvm.Gender!,
+                    Country = pvm.Country!,
+                    Age = pvm.Age!.Value,
+                    Date = pvm.Date!.Value
                 });
 
 
@@ -98,20 +95,15 @@ namespace MauiApiServer.Data.Core
         }
 
 
-        private async Task<bool> CheckDataForEmpry(List<Person> data)
+        private bool CheckDataForEmpry(List<PersonViewModel> data)
         {
-            return await Task.FromResult(data == null || data.Count == 0);
+            return data is null || data.Count == 0;
         }
         private async Task<List<PersonViewModel>?> ValidateDataAsync(List<Person> data)
         {
-            if (await CheckDataForEmpry(data))
-            {
-                return null;
-            }
-
             return await _dataValidator.ValidateDataAsync(data);
         }
-        private async Task<PersonViewModel?> ValidateDataAsync(Person? person)
+        private async Task<PersonViewModel?> ValidateDataAsync(PersonViewModel? person)
         {
             return await _dataValidator.ValidateDataAsync(person);
         }
